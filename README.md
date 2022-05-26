@@ -1,5 +1,7 @@
 # AuthServer
+
 Allows you to manage user permissions and roles
+
 ## Installation and Usage
 
 ```shell
@@ -36,7 +38,7 @@ go.exe test -timeout 30s -run ^TestDeleteRole$ authserver
 test example:
 
 ```shell
-go.exe test -timeout 30s -run ^Test_AddRoleToUser$ authserver
+go.exe test -timeout 30s -run ^TestAddRoleToUser$ authserver
 ```
 
 ### Once user added, get token while login
@@ -46,5 +48,5 @@ go.exe test -timeout 30s -run ^Test_AddRoleToUser$ authserver
 test example:
 
 ```shell
-go.exe test -timeout 30s -run ^Test_Auth$ authserver
+go.exe test -timeout 30s -run ^TestAuth$ authserver
 ```

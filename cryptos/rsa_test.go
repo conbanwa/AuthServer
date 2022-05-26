@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Test_rsa(t *testing.T) {
+func Testrsa(t *testing.T) {
 	GenerateRSAKey(2048)
 	message := "hello world"
 	//加密
@@ -18,7 +18,7 @@ func Test_rsa(t *testing.T) {
 		t.Fail()
 	}
 }
-func Test_token(t *testing.T) {
+func Testtoken(t *testing.T) {
 	GenerateRSAKey(1024)
 	username := "admin"
 	//加密

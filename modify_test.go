@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_AddRoleToUser(t *testing.T) {
+func TestAddRoleToUser(t *testing.T) {
 	var err error
 	err = CreateUser("bob", "123456")
 	if err != nil {

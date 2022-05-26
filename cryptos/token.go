@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+//key为用户名，value为token，map的结构防止同用户多个token； 小写开头 不对外暴露
 var tokenStorage = map[string]string{}
 
 type TokenPlain struct {

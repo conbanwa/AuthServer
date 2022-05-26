@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Test_Auth(t *testing.T) {
+func TestAuth(t *testing.T) {
 	cryptos.GenerateRSAKey(2048)
 	var err error
 	err = CreateUser("bob", "123456")
