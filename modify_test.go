@@ -34,14 +34,14 @@ func TestAddRoleToUser(t *testing.T) {
 	}
 }
 
-func TestCreateUser(t *testing.T) {
+func Test_CreateUser(t *testing.T) {
 	err := CreateUser("admin", "123456")
 	if err != nil {
 		t.Log("error: ", err)
 		t.Fail()
 	}
 }
-func TestDeleteUser(t *testing.T) {
+func Test_DeleteUser(t *testing.T) {
 	var err error
 	err = CreateUser("admin", "123456")
 	if err != nil {
@@ -54,14 +54,14 @@ func TestDeleteUser(t *testing.T) {
 		t.Fail()
 	}
 }
-func TestCreateRole(t *testing.T) {
+func Test_CreateRole(t *testing.T) {
 	err := CreateRole("admin")
 	if err != nil {
 		t.Log("error: ", err)
 		t.Fail()
 	}
 }
-func TestDeleteRole(t *testing.T) {
+func Test_DeleteRole(t *testing.T) {
 	var err error
 	err = CreateRole("admin")
 	if err != nil {
