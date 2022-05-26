@@ -1,5 +1,7 @@
 # AuthServer
+
 Allows you to manage user permissions and roles
+
 ## Installation and Usage
 
 ```shell
@@ -22,13 +24,13 @@ This package allows you to manage user permissions and roles.
 test example:
 
 ```shell
-go.exe test -timeout 30s -run ^TestCreateUser$ authserver
+go.exe test -timeout 30s -run ^Test_CreateUser$ authserver
 
-go.exe test -timeout 30s -run ^TestDeleteUser$ authserver
+go.exe test -timeout 30s -run ^Test_DeleteUser$ authserver
 
-go.exe test -timeout 30s -run ^TestCreateRole$ authserver
+go.exe test -timeout 30s -run ^Test_CreateRole$ authserver
 
-go.exe test -timeout 30s -run ^TestDeleteRole$ authserver
+go.exe test -timeout 30s -run ^Test_DeleteRole$ authserver
 ```
 
 ### Asing users with roles
