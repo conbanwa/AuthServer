@@ -1,13 +1,13 @@
-# AuthServer
+# Auth Server
 
 Allows you to manage user permissions and roles
 
 ## Installation and Usage
 
 ```shell
-// Adding requirments
+// Adding requirements
 go mod tidy
-// runing service
+// running service
 go run main.go
 
 //or
@@ -33,7 +33,7 @@ go.exe test -timeout 30s -run ^Test_CreateRole$ authserver
 go.exe test -timeout 30s -run ^Test_DeleteRole$ authserver
 ```
 
-### Asing users with roles
+### Assigning users with roles
 
 test example:
 
@@ -41,9 +41,9 @@ test example:
 go.exe test -timeout 30s -run ^TestAddRoleToUser$ authserver
 ```
 
-### Once user added, get token while login
+### Once user has been added, return token after login
 
-### Using token to get authorized according to different roles
+### Get authorized to different roles by using token
 
 test example:
 
