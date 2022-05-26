@@ -1,52 +1,85 @@
-# AuthServer
+# Collaborative Document System Architecture
 
-Allows you to manage user permissions and roles
+## High-Level Architecture Diagram
 
-## Installation and Usage
-
-```shell
-// Adding requirments
-go mod tidy
-// runing service
-go run main.go
-
-//or
-go build main.go
-./main.exe
+```mermaid
+graph TD
+    A["Client<br/>(Web/Mobile Apps)"] -->|"API Requests"| B["API Gateway<br/>(Go Gin)"]
+    A -->|"Real-Time Edits"| C["WebSocket<br/>(Real-Time Sync)"]
+    B -->|"Structured Data"| D["MySQL<br/>(User/Auth Data)"]
+    B -->|"Document Revisions"| E["MongoDB<br/>(NoSQL Docs)"]
+    B -->|"File Uploads"| F["AWS S3<br/>(Large Files)"]
+    C -->|"Message Queue"| G["Kafka<br/>(High DAU Sync)"]
+    A -->|"Local Cache"| H["Client Cache<br/>(Offline Support)"]
+    B -->|"Server Cache"| I["Redis<br/>(Session/Data Cache)"]
+    G --> I
+    I --> E
+    E -->|"Persistence"| J["Persistent Storage<br/>(Archival)"]
+    F -->|"DNS"| A
+    subgraph "User End"
+        A
+        H
+    end
+    subgraph "Server Layer"
+        B
+        C
+        G
+        I
+    end
+    subgraph "Persistence Layer"
+        D
+        E
+        F
+        J
+    end
 ```
 
-## What It Does
+## Data Editing Architecture for High-Concurrency Sync
 
-This package allows you to manage user permissions and roles.
-
-### Add, remove users and roles
-
-test example:
-
-```shell
-go.exe test -timeout 30s -run ^Test_CreateUser$ authserver
-
-go.exe test -timeout 30s -run ^Test_DeleteUser$ authserver
-
-go.exe test -timeout 30s -run ^Test_CreateRole$ authserver
-
-go.exe test -timeout 30s -run ^Test_DeleteRole$ authserver
+```mermaid
+graph LR
+    A["Client 1<br/>(Editor)"] -->|"Delta Edit Command"| B["OT/CRDT Engine<br/>(Client-Side)"]
+    B -->|"Transformed Delta"| C["Server<br/>(Go Gin + Kafka)"]
+    C -->|"Broadcast Delta"| D["OT/CRDT Engine<br/>(Other Clients)"]
+    D -->|"Apply Consistent Change"| E["Client 2<br/>(Viewer/Editor)"]
+    E -->|"Ack/Conflict Resolve"| C
+    C -->|"Archive Revision"| F["MongoDB<br/>(Historical Logs)"]
+    subgraph "P2P Fallback (Idle Users)"
+        E -->|"P2P Delta"| A
+    end
 ```
 
-### Asing users with roles
+## Scalability Strategies
+- Horizontal scaling: Shard MongoDB and Kafka clusters; use load-balanced Go Gin instances.
+- Auto-scaling: Monitor DAU/metrics to dynamically add nodes via Kubernetes.
+- P2P offloading: For high-traffic docs, shift to client-side P2P to minimize server load.
 
-test example:
+## Component Selection Reasons
+- **Go (Gin)**: Chosen for high concurrency and low overhead, reducing maintenance via minimal deps.
+- **MySQL**: Reliable for structured data like users/permissions; ACID compliance for consistency.
+- **MongoDB**: Flexible for evolving doc schemas; sharding supports scalability and revisions.
+- **Kafka**: Handles high-throughput real-time messaging for 100M DAU with persistence.
+- **AWS S3**: Secure, scalable storage isolating large files from text traffic.
+- **Redis**: Fast caching for low-latency sync, reducing DB hits.
 
-```shell
-go.exe test -timeout 30s -run ^TestAddRoleToUser$ authserver
-```
+## Data Models
+- **MySQL (Users/Permissions)**: User {id, name, email, role}; Permission {doc_id, user_id, level (full/read/none), timestamp}; AuditLog {id, action, user_id, hash}.
+- **MongoDB (Documents)**: Doc {id, content (JSON), revisions [{version, changes, timestamp}], metadata}.
+- **Kafka (Messages)**: Topics for edits {doc_id, delta, user_id}; sync triggers.
+- **Redis (Cache)**: Keys for sessions {user_id: permissions}; doc_deltas {doc_id: recent_changes}.
+- **S3 (Files)**: Buckets for media {doc_id/file_id: binary}.
 
-### Once user added, get token while login
+## Key Detail Explanations
+- **Consistency in Edits**: Use CRDTs for deterministic merges, ensuring identical outcomes across clients.
+- **Security**: Hash (e.g., SHA-256) all logs; encrypt transmissions with TLS.
+- **Idle Handling**: Timers for mode switches (edit→read-only after 5min; read-only→P2P after 30min).
+- **Cost Reduction**: P2P/WebRTC for views; separate file/text streams via WebSockets/HTTP.
 
-### Using token to get authorized according to different roles
+## TDD Approach
+Deploy a high-availability auto-testing system using Jenkins/Kubernetes, running tests during off-peak hours (e.g., nightly via cron). Maximize test cases (>80% coverage) with Go's testing pkg.
 
-test example:
-
-```shell
-go.exe test -timeout 30s -run ^TestAuth$ authserver
-```
+Build CI/CD pipeline: 
+- **Version Mgmt/Release**: Git for branching; semantic versioning.
+- **Func Tests**: Unit/integration tests for features (e.g., collab edits, permissions).
+- **Perf Tests**: Use Go pprof for CPU/block/mem profiling; load tests with Locust.
+Pipeline: Commit → Tests (TDD-first) → Build → Deploy (blue-green) → Monitor.

@@ -1,7 +1,7 @@
 package main
 
 //data storage
-//improve performance by using map structer
+//improve performance by using map structure
 //if there is a concurrent operation needed, should use sync.Map instead.
 var (
 	userList = map[string]User{}

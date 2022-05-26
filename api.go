@@ -58,6 +58,18 @@ func AddRoleToUser(username, rolename string) (err error) {
 	userList[username].Permission[rolename] = true
 	return
 }
+
+//有了增加权限，应当也有个删除权限
+func RemoveRoleToUser(username, rolename string) (err error) {
+	if _, ok := userList[username]; !ok {
+		return errors.New("user not found")
+	}
+	if _, ok := roleList[rolename]; !ok {
+		return errors.New("role not found")
+	}
+	delete(userList[username].Permission, rolename)
+	return
+}
 func Authenticate(username, password string) (token string, err error) {
 	user, ok := userList[username]
 	if !ok {
@@ -69,29 +81,24 @@ func Authenticate(username, password string) (token string, err error) {
 	token = cryptos.GenerateToken(username, EXPIRE_HOUR*3600)
 	return
 }
-func Invalidate(token string) (err error) {
+func Invalidate(token string) {
 	cryptos.DeleteToken(token)
-	return
+	//it won't panic even the key is not exit
 }
-func CheckRole(token string, role string) bool {
-	roles, err := AllRoles(token)
+func CheckRole(token string, role string) (bool, error) {
+	tp, err := cryptos.DecryptToken(token)
 	if err != nil {
-		return false
+		return false, err //reson of invalid
 	}
-	for _, v := range roles {
-		if v.Name == role {
-			return true
-		}
-	}
-	return false
+	return userList[tp.Username].Permission[role], nil
+	//即使键值不存在 也会返回零值（false)
 }
 func AllRoles(token string) (roles []Role, err error) {
 	tp, err := cryptos.DecryptToken(token)
 	if err != nil {
 		return
 	}
-	rolemap := userList[tp.Username].Permission
-	for v := range rolemap {
+	for v := range userList[tp.Username].Permission {
 		if r, ok := roleList[v]; ok {
 			roles = append(roles, r)
 		}
