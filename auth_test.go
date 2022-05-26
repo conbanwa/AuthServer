@@ -50,19 +50,23 @@ func TestAuth(t *testing.T) {
 		t.Log("error: ", err)
 		t.Fail()
 	}
-	ok := CheckRole(token, "admin")
+	ok, err := CheckRole(token, "admin")
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+	}
 	if !ok {
 		t.Log("error: ", err)
 		t.Fail()
 	}
-	ok = CheckRole(token, "administrator")
-	if ok {
+	ok, err = CheckRole(token, "administrator")
+	if err != nil || ok {
 		t.Log("error: ", err)
 		t.Fail()
 	}
 	Invalidate(token)
-	ok = CheckRole(token, "admin")
-	if ok {
+	ok, err = CheckRole(token, "admin")
+	if err == nil || ok {
 		t.Fail()
 	}
 	roles, err = AllRoles(token)
