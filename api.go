@@ -69,21 +69,17 @@ func Authenticate(username, password string) (token string, err error) {
 	token = cryptos.GenerateToken(username, EXPIRE_HOUR*3600)
 	return
 }
-func Invalidate(token string) (err error) {
+func Invalidate(token string) {
 	cryptos.DeleteToken(token)
-	return
+	//it won't panic even the key is not exit
 }
 func CheckRole(token string, role string) bool {
-	roles, err := AllRoles(token)
+	tp, err := cryptos.DecryptToken(token)
 	if err != nil {
 		return false
 	}
-	for _, v := range roles {
-		if v.Name == role {
-			return true
-		}
-	}
-	return false
+	return userList[tp.Username].Permission[role]
+	//即使键值不存在 也会返回零值（false)
 }
 func AllRoles(token string) (roles []Role, err error) {
 	tp, err := cryptos.DecryptToken(token)

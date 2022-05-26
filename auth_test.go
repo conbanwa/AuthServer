@@ -60,11 +60,7 @@ func TestAuth(t *testing.T) {
 		t.Log("error: ", err)
 		t.Fail()
 	}
-	err = Invalidate(token)
-	if err != nil {
-		t.Log("error: ", err)
-		t.Fail()
-	}
+	Invalidate(token)
 	ok = CheckRole(token, "admin")
 	if ok {
 		t.Fail()
@@ -83,7 +79,7 @@ func TestAuth(t *testing.T) {
 	time.Sleep(2 * time.Second)
 	roles, err = AllRoles(expiredtoken)
 	if err.Error() != "token expired" {
-		t.Log("err: ", err,roles)
+		t.Log("err: ", err, roles)
 		t.Fail()
 	}
 }
