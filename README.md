@@ -63,7 +63,7 @@ graph LR
 - **Redis**: Fast caching for low-latency sync, reducing DB hits.
 
 ## Data Models
-- **MySQL (Users/Permissions)**: User {id, name, email, role}; Permission {doc_id, user_id, level (full/read/none), timestamp}; AuditLog {id, action, user_id, hash}.
+- **MySQL (Users/Permissions)**: User {id, name, email, role}; Permission {doc_id, user_id, level (full/read/none), timestamp}.
 - **MongoDB (Documents)**: Doc {id, content (JSON), revisions [{version, changes, timestamp}], metadata}.
 - **Kafka (Messages)**: Topics for edits {doc_id, delta, user_id}; sync triggers.
 - **Redis (Cache)**: Keys for sessions {user_id: permissions}; doc_deltas {doc_id: recent_changes}.
