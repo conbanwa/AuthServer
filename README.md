@@ -8,7 +8,7 @@ graph TD
     A -->|"Real-Time Edits"| C["WebSocket<br/>(Real-Time Sync)"]
     B -->|"Structured Data"| D["MySQL<br/>(User/Auth Data)"]
     B -->|"Document Revisions"| E["MongoDB<br/>(NoSQL Docs)"]
-    B -->|"File Uploads"| F["AWS S3<br/>(Large Files)"]
+    B -->|"File Uploads"| F["Cloud Object Storage<br/>(Large Files)"]
     C -->|"Message Queue"| G["Kafka<br/>(High DAU Sync)"]
     A -->|"Local Cache"| H["Client Cache<br/>(Offline Support)"]
     B -->|"Server Cache"| I["Redis<br/>(Session/Data Cache)"]
@@ -59,15 +59,15 @@ graph LR
 - **MySQL**: Reliable for structured data like users/permissions; ACID compliance for consistency.
 - **MongoDB**: Flexible for evolving doc schemas; sharding supports scalability and revisions.
 - **Kafka**: Handles high-throughput real-time messaging for 100M DAU with persistence.
-- **AWS S3**: Secure, scalable storage isolating large files from text traffic.
+- **Cloud Object Storage**: Secure, scalable storage isolating large files from text traffic.
 - **Redis**: Fast caching for low-latency sync, reducing DB hits.
 
 ## Data Models
-- **MySQL (Users/Permissions)**: User {id, name, email, role}; Permission {doc_id, user_id, level (full/read/none), timestamp}.
+- **MySQL (Users/Permissions)**: User {id, name, email}; Permission {doc_id, user_id, level (full/read/none), timestamp}.
 - **MongoDB (Documents)**: Doc {id, content (JSON), revisions [{version, changes, timestamp}], metadata}.
 - **Kafka (Messages)**: Topics for edits {doc_id, delta, user_id}; sync triggers.
 - **Redis (Cache)**: Keys for sessions {user_id: permissions}; doc_deltas {doc_id: recent_changes}.
-- **S3 (Files)**: Buckets for media {doc_id/file_id: binary}.
+- **Cloud Object Storage (Files)**: Buckets for media {doc_id/file_id: binary}.
 
 ## Key Detail Explanations
 - **Consistency in Edits**: Use CRDTs for deterministic merges, ensuring identical outcomes across clients.
@@ -82,4 +82,4 @@ Build CI/CD pipeline:
 - **Version Mgmt/Release**: Git for branching; semantic versioning.
 - **Func Tests**: Unit/integration tests for features (e.g., collab edits, permissions).
 - **Perf Tests**: Use Go pprof for CPU/block/mem profiling; load tests with Locust.
-Pipeline: Commit → Tests (TDD-first) → Build → Deploy (blue-green) → Monitor.
+Pipeline: Commit → Tests (TDD-first) → Build → Deploy → Monitor.
