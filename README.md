@@ -72,7 +72,7 @@ graph LR
 ## Key Detail Explanations
 - **Consistency in Edits**: Use CRDTs for deterministic merges, ensuring identical outcomes across clients.
 - **Security**: Hash (e.g., SHA-256) all logs; encrypt transmissions with TLS.
-- **Idle Handling**: Timers for mode switches (edit→read-only after 5min; read-only→P2P after 30min).
+- **Idle Handling**: Timers for mode switches (edit→read-only after 15min; read-only→P2P after 30min; disconnect after 60min).
 - **Cost Reduction**: P2P/WebRTC for views; separate file/text streams via WebSockets/HTTP.
 
 ## TDD Approach
