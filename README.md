@@ -38,14 +38,12 @@ graph TD
 
 ```mermaid
 graph LR
-    A["Client 1<br/>(Editor)"] -->|"Delta Edit Command"| B["OT/CRDT Engine<br/>(Client-Side)"]
-    B -->|"Transformed Delta"| C["Server<br/>(Go Gin + Kafka)"]
-    C -->|"Broadcast Delta"| D["OT/CRDT Engine<br/>(Other Clients)"]
-    D -->|"Apply Consistent Change"| E["Client 2<br/>(Viewer/Editor)"]
-    E -->|"Ack/Conflict Resolve"| C
+    A["Client 1<br/>(Editor)"] -->|"Delta Edit Command"| C["Server<br/>(Go Gin + Kafka)"]
+    C -->|"Broadcast Delta"| E["Client 2<br/>(Read only)"]
+    C -->|"Conflict Resolve"| A
     C -->|"Archive Revision"| F["MongoDB<br/>(Historical Logs)"]
     subgraph "P2P Fallback (Idle Users)"
-        E -->|"P2P Delta"| A
+        A -->|"P2P Delta"| E
     end
 ```
 
